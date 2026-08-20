@@ -49,6 +49,11 @@ export function fallbackRouter(prompt) {
             { action: 'search_strings', file: 'libUE4.so', keywords: ['health', 'ammo'] }
         ];
     }
+    if (lower.includes('diff nikaal') || lower.includes('compare binaries')) {
+        return [
+            { action: 'binary_diff', file1: 'old.so', file2: 'new.so' }
+        ];
+    }
     
     return [{ action: 'chat', reply: 'Could not determine workflow. Please be specific.' }];
 }

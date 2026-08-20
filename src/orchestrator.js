@@ -11,6 +11,7 @@ import { buildArm64 } from './tools/buildWrapper.js';
 import { summarizeFolder } from './tools/folderSummarizer.js';
 import { generateAndTestLua } from './tools/luaPromptGen.js';
 import { searchStringsInBinary } from './tools/stringSearch.js';
+import { compareBinaries } from './tools/binaryDiff.js';
 import { fallbackRouter } from './router.js';
 
 export async function orchestrateTask(prompt, logCallback = console.log) {
@@ -32,6 +33,7 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
         - {"action": "summarize_folder", "dir": "folder_path"}
         - {"action": "generate_lua_prompt", "prompt": "user request", "outFile": "script.lua"}
         - {"action": "search_strings", "file": "lib.so", "keywords": ["word1", "word2"]}
+        - {"action": "binary_diff", "file1": "path1.so", "file2": "path2.so"}
         - {"action": "chat", "reply": "message"}
 
         User Prompt: "${prompt}"
@@ -94,6 +96,9 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
                         break;
                     case 'search_strings':
                         stepResult = await searchStringsInBinary(step.file, step.keywords, logCallback);
+                        break;
+                    case 'binary_diff':
+                        stepResult = await compareBinaries(step.file1, step.file2, logCallback);
                         break;
                     case 'chat':
                         stepResult = step.reply;

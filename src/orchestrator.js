@@ -20,6 +20,8 @@ import { generatePatchPlan } from './tools/patchGenerator.js';
 import { generateHookDocumentation } from './tools/fridaScriptGen.js';
 import { fullFixLoop, applyCustomChange } from './tools/smartFix.js';
 import { analyzeAndSuggest } from './tools/codeAnalyzer.js';
+import { parseMaps } from './tools/mapParser.js';
+import { signAndInstall } from './tools/apkDev.js';
 import { fallbackRouter } from './router.js';
 
 export async function orchestrateTask(prompt, logCallback = console.log) {
@@ -51,6 +53,8 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
         - {"action": "source_fix", "dir": ".", "file": "main.cpp"}
         - {"action": "code_analyze", "file": "main.cpp"}
         - {"action": "apply_change", "file": "main.cpp", "description": "change description"}
+        - {"action": "parse_maps", "pid": "1234"}
+        - {"action": "apk_deploy", "apk": "app.apk", "keystore": "debug.keystore"}
         - {"action": "chat", "reply": "message"}
 
         User Prompt: "${prompt}"
@@ -143,6 +147,12 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
                         break;
                     case 'apply_change':
                         stepResult = await applyCustomChange(step.file, step.description, logCallback);
+                        break;
+                    case 'parse_maps':
+                        stepResult = await parseMaps(step.pid, logCallback);
+                        break;
+                    case 'apk_deploy':
+                        stepResult = await signAndInstall(step.apk, step.keystore, logCallback);
                         break;
                     case 'chat':
                         stepResult = step.reply;

@@ -99,6 +99,22 @@ export function fallbackRouter(prompt) {
             { action: 'apply_change', file: 'main.cpp', description: 'Rename variable' }
         ];
     }
+    if (lower.includes('maps parse') || lower.includes('parse maps')) {
+        return [
+            { action: 'parse_maps', pid: '1234' }
+        ];
+    }
+    if (lower.includes('math demo compile') || lower.includes('compile math demo')) {
+        return [
+            { action: 'termux', cmd: 'cp', args: ['templates/math_demo.cpp', './math_demo.cpp'] },
+            { action: 'build_arm64', dir: '.', file: 'math_demo.cpp' }
+        ];
+    }
+    if (lower.includes('apk sign') || lower.includes('sign apk') || lower.includes('apk deploy')) {
+        return [
+            { action: 'apk_deploy', apk: 'app.apk', keystore: 'debug.keystore' }
+        ];
+    }
     
     return [{ action: 'chat', reply: 'Could not determine workflow. Please be specific.' }];
 }

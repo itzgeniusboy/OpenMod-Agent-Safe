@@ -115,6 +115,36 @@ export function fallbackRouter(prompt) {
             { action: 'apk_deploy', apk: 'app.apk', keystore: 'debug.keystore' }
         ];
     }
+    if (lower.includes('report bana elf')) {
+        return [
+            { action: 'generate_elf_report', jsonFile: 'elf_analysis.json', outFile: 'reports/elf_report.html' }
+        ];
+    }
+    if (lower.includes('report bana pak')) {
+        return [
+            { action: 'generate_pak_report', jsonFile: 'pak_analysis.json', outFile: 'reports/pak_report.html' }
+        ];
+    }
+    if (lower.includes('address map kar')) {
+        return [
+            { action: 'generate_generic_elf_report', elfPath: 'libUE4.so', outFile: 'elf_symbols_libUE4.json' }
+        ];
+    }
+    if (lower.includes('schedule set kar')) {
+        return [
+            { action: 'schedule_task', cmd: 'npm run bgmi', time: '0 */2 * * *', name: 'autoBgmi' }
+        ];
+    }
+    if (lower.includes('pak names decode kar') || lower.includes('raw pak inspector')) {
+        return [
+            { action: 'inspect_raw_pak', pakPath: 'target.pak', outFile: 'pak_structure.json' }
+        ];
+    }
+    if (lower.includes('menu mode on')) {
+        return [
+            { action: 'tui_menu' }
+        ];
+    }
     
     return [{ action: 'chat', reply: 'Could not determine workflow. Please be specific.' }];
 }

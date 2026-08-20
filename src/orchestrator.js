@@ -22,6 +22,11 @@ import { fullFixLoop, applyCustomChange } from './tools/smartFix.js';
 import { analyzeAndSuggest } from './tools/codeAnalyzer.js';
 import { parseMaps } from './tools/mapParser.js';
 import { signAndInstall } from './tools/apkDev.js';
+import { generateELFReport, generatePAKReport } from './tools/reportGenerator.js';
+import { generateGenericELFReport } from './tools/addrMapper.js';
+import { inspectRawPAK } from './tools/pakNameDecoder.js';
+import { scheduleTask } from './tools/scheduler.js';
+import { startMenu } from './tools/tuiMenu.js';
 import { fallbackRouter } from './router.js';
 
 export async function orchestrateTask(prompt, logCallback = console.log) {
@@ -55,6 +60,12 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
         - {"action": "apply_change", "file": "main.cpp", "description": "change description"}
         - {"action": "parse_maps", "pid": "1234"}
         - {"action": "apk_deploy", "apk": "app.apk", "keystore": "debug.keystore"}
+        - {"action": "generate_elf_report", "jsonFile": "data.json", "outFile": "report.html"}
+        - {"action": "generate_pak_report", "jsonFile": "data.json", "outFile": "report.html"}
+        - {"action": "generate_generic_elf_report", "elfPath": "lib.so", "outFile": "report.json"}
+        - {"action": "inspect_raw_pak", "pakPath": "target.pak", "outFile": "report.json"}
+        - {"action": "schedule_task", "cmd": "command", "time": "cron_string", "name": "task_name"}
+        - {"action": "tui_menu"}
         - {"action": "chat", "reply": "message"}
 
         User Prompt: "${prompt}"
@@ -153,6 +164,24 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
                         break;
                     case 'apk_deploy':
                         stepResult = await signAndInstall(step.apk, step.keystore, logCallback);
+                        break;
+                    case 'generate_elf_report':
+                        stepResult = await generateELFReport(step.jsonFile, step.outFile, logCallback);
+                        break;
+                    case 'generate_pak_report':
+                        stepResult = await generatePAKReport(step.jsonFile, step.outFile, logCallback);
+                        break;
+                    case 'generate_generic_elf_report':
+                        stepResult = await generateGenericELFReport(step.elfPath, step.outFile, logCallback);
+                        break;
+                    case 'inspect_raw_pak':
+                        stepResult = await inspectRawPAK(step.pakPath, step.outFile, logCallback);
+                        break;
+                    case 'schedule_task':
+                        stepResult = await scheduleTask(step.cmd, step.time, step.name, logCallback);
+                        break;
+                    case 'tui_menu':
+                        stepResult = await startMenu(logCallback);
                         break;
                     case 'chat':
                         stepResult = step.reply;

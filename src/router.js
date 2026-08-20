@@ -115,6 +115,13 @@ export function fallbackRouter(prompt) {
             { action: 'apk_deploy', apk: 'app.apk', keystore: 'debug.keystore' }
         ];
     }
+    if (lower.includes('source complete kar')) {
+        const parts = prompt.split(' ');
+        const file = parts.length > 3 ? parts[3] : 'main.cpp';
+        return [
+            { action: 'complete_source', file: file }
+        ];
+    }
     if (lower.includes('report bana elf')) {
         return [
             { action: 'generate_elf_report', jsonFile: 'elf_analysis.json', outFile: 'reports/elf_report.html' }

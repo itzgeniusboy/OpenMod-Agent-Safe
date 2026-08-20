@@ -27,6 +27,7 @@ import { generateGenericELFReport } from './tools/addrMapper.js';
 import { inspectRawPAK } from './tools/pakNameDecoder.js';
 import { scheduleTask } from './tools/scheduler.js';
 import { startMenu } from './tools/tuiMenu.js';
+import { completeSource } from './tools/sourceCompleter.js';
 import { fallbackRouter } from './router.js';
 
 export async function orchestrateTask(prompt, logCallback = console.log) {
@@ -67,6 +68,7 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
         - {"action": "schedule_task", "cmd": "command", "time": "cron_string", "name": "task_name"}
         - {"action": "tui_menu"}
         - {"action": "chat", "reply": "message"}
+        - {"action": "complete_source", "file": "path"}
 
         User Prompt: "${prompt}"
         Output ONLY a valid JSON array of objects.
@@ -182,6 +184,9 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
                         break;
                     case 'tui_menu':
                         stepResult = await startMenu(logCallback);
+                        break;
+                    case 'complete_source':
+                        stepResult = await completeSource(step.file, "generic", logCallback);
                         break;
                     case 'chat':
                         stepResult = step.reply;

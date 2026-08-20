@@ -1,0 +1,1 @@
+Find generic bugs (null checks, leaks, type errors) and suggest fixes. Output as JSON array of suggestions.

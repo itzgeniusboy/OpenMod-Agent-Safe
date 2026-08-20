@@ -1,0 +1,1 @@
+Fix this C++ error and return full code. Do not add cheat-specific logic.

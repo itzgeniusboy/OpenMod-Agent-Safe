@@ -84,6 +84,21 @@ export function fallbackRouter(prompt) {
             { action: 'hook_doc', targetClass: 'UWorld', targetMethod: 'GetWorld', outFile: 'hook_guide.md' }
         ];
     }
+    if (lower.includes('source fix') || lower.includes('fix kar')) {
+        return [
+            { action: 'source_fix', dir: '.', file: 'main.cpp' }
+        ];
+    }
+    if (lower.includes('code analyze') || lower.includes('analyze kar')) {
+        return [
+            { action: 'code_analyze', file: 'main.cpp' }
+        ];
+    }
+    if (lower.includes('change apply') || lower.includes('rename kar')) {
+        return [
+            { action: 'apply_change', file: 'main.cpp', description: 'Rename variable' }
+        ];
+    }
     
     return [{ action: 'chat', reply: 'Could not determine workflow. Please be specific.' }];
 }

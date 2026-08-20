@@ -18,6 +18,8 @@ import { watchLogs } from './tools/logcatWatcher.js';
 import { loadTemplate } from './tools/templateManager.js';
 import { generatePatchPlan } from './tools/patchGenerator.js';
 import { generateHookDocumentation } from './tools/fridaScriptGen.js';
+import { fullFixLoop, applyCustomChange } from './tools/smartFix.js';
+import { analyzeAndSuggest } from './tools/codeAnalyzer.js';
 import { fallbackRouter } from './router.js';
 
 export async function orchestrateTask(prompt, logCallback = console.log) {
@@ -46,6 +48,9 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
         - {"action": "load_template", "name": "template.cpp"}
         - {"action": "patch_plan", "instructions": [{"offset": "0x1A", "patch": "00", "description": "desc"}], "outFile": "plan.txt"}
         - {"action": "hook_doc", "targetClass": "class", "targetMethod": "method", "outFile": "doc.md"}
+        - {"action": "source_fix", "dir": ".", "file": "main.cpp"}
+        - {"action": "code_analyze", "file": "main.cpp"}
+        - {"action": "apply_change", "file": "main.cpp", "description": "change description"}
         - {"action": "chat", "reply": "message"}
 
         User Prompt: "${prompt}"
@@ -129,6 +134,15 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
                         break;
                     case 'hook_doc':
                         stepResult = await generateHookDocumentation(step.targetClass, step.targetMethod, step.outFile, logCallback);
+                        break;
+                    case 'source_fix':
+                        stepResult = await fullFixLoop(step.dir, step.file, logCallback);
+                        break;
+                    case 'code_analyze':
+                        stepResult = await analyzeAndSuggest(step.file, logCallback);
+                        break;
+                    case 'apply_change':
+                        stepResult = await applyCustomChange(step.file, step.description, logCallback);
                         break;
                     case 'chat':
                         stepResult = step.reply;

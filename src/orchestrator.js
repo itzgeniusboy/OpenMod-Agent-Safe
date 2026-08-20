@@ -5,6 +5,9 @@ import { unpackPak } from './tools/pak.js';
 import { generateLuaBindings } from './tools/luaGen.js';
 import { autoBuild } from './tools/build.js';
 import { getExports, generateOffsetsHeader } from './tools/disasm.js';
+import { analyzeElf } from './tools/elfAnalyzer.js';
+import { inspectPak } from './tools/assetInspector.js';
+import { buildArm64 } from './tools/buildWrapper.js';
 import { fallbackRouter } from './router.js';
 
 export async function orchestrateTask(prompt, logCallback = console.log) {
@@ -20,6 +23,9 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
         - {"action": "gen_lua", "dir": "extracted_pak_dir", "outFile": "path"}
         - {"action": "build_cpp", "dir": "src_dir", "file": "main.cpp"}
         - {"action": "disasm", "file": "lib.so", "outFile": "Offsets.h"}
+        - {"action": "elf_analyze", "file": "lib.so"}
+        - {"action": "pak_inspect", "file": "target.pak"}
+        - {"action": "build_arm64", "dir": "src_dir", "file": "main.cpp"}
         - {"action": "chat", "reply": "message"}
 
         User Prompt: "${prompt}"
@@ -59,11 +65,20 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
                         stepResult = await generateLuaBindings(step.dir, step.outFile);
                         break;
                     case 'build_cpp':
-                        stepResult = await autoBuild(step.dir, step.file, logCallback);
+                        stepResult = await autoBuild(step.dir, step.file, null, logCallback);
                         break;
                     case 'disasm':
                         const exports = await getExports(step.file);
                         stepResult = await generateOffsetsHeader(exports, step.outFile);
+                        break;
+                    case 'elf_analyze':
+                        stepResult = await analyzeElf(step.file, logCallback);
+                        break;
+                    case 'pak_inspect':
+                        stepResult = await inspectPak(step.file, logCallback);
+                        break;
+                    case 'build_arm64':
+                        stepResult = await buildArm64(step.dir, step.file, logCallback);
                         break;
                     case 'chat':
                         stepResult = step.reply;

@@ -18,6 +18,22 @@ export function fallbackRouter(prompt) {
             { action: 'disasm', file: 'libtarget.so', outFile: 'Offsets.h' }
         ];
     }
+    if (lower.includes('elf analyze') || lower.includes('elf analyzer')) {
+        return [
+            { action: 'elf_analyze', file: 'libUE4.so' }
+        ];
+    }
+    if (lower.includes('pak inspect') || lower.includes('inspect pak')) {
+        return [
+            { action: 'pak_inspect', file: 'target.pak' }
+        ];
+    }
+    if (lower.includes('mock overlay compile') || lower.includes('compile mock overlay')) {
+        return [
+            { action: 'termux', cmd: 'cp', args: ['templates/diagnostic_overlay.cpp', './diagnostic_overlay.cpp'] },
+            { action: 'build_arm64', dir: '.', file: 'diagnostic_overlay.cpp' }
+        ];
+    }
     
     return [{ action: 'chat', reply: 'Could not determine workflow. Please be specific.' }];
 }

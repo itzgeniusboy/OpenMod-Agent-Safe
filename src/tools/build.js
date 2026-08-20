@@ -3,8 +3,8 @@ import { readFile, writeFile } from './file.js';
 import chalk from 'chalk';
 import path from 'path';
 
-export async function autoBuild(sourceDir, mainFile, logCallback = console.log) {
-    const buildCmd = `clang++ ${mainFile} -o ${path.basename(mainFile, '.cpp')}.out`;
+export async function autoBuild(sourceDir, mainFile, customCmd = null, logCallback = console.log) {
+    const buildCmd = customCmd || `clang++ ${mainFile} -o ${path.basename(mainFile, '.cpp')}.out`;
     const maxRetries = 5;
     let retries = 0;
     

@@ -9,6 +9,8 @@ import { analyzeElf } from './tools/elfAnalyzer.js';
 import { inspectPak } from './tools/assetInspector.js';
 import { buildArm64 } from './tools/buildWrapper.js';
 import { summarizeFolder } from './tools/folderSummarizer.js';
+import { generateAndTestLua } from './tools/luaPromptGen.js';
+import { searchStringsInBinary } from './tools/stringSearch.js';
 import { fallbackRouter } from './router.js';
 
 export async function orchestrateTask(prompt, logCallback = console.log) {
@@ -28,6 +30,8 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
         - {"action": "pak_inspect", "file": "target.pak"}
         - {"action": "build_arm64", "dir": "src_dir", "file": "main.cpp"}
         - {"action": "summarize_folder", "dir": "folder_path"}
+        - {"action": "generate_lua_prompt", "prompt": "user request", "outFile": "script.lua"}
+        - {"action": "search_strings", "file": "lib.so", "keywords": ["word1", "word2"]}
         - {"action": "chat", "reply": "message"}
 
         User Prompt: "${prompt}"
@@ -84,6 +88,12 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
                         break;
                     case 'summarize_folder':
                         stepResult = await summarizeFolder(step.dir, logCallback);
+                        break;
+                    case 'generate_lua_prompt':
+                        stepResult = await generateAndTestLua(step.prompt, step.outFile, logCallback);
+                        break;
+                    case 'search_strings':
+                        stepResult = await searchStringsInBinary(step.file, step.keywords, logCallback);
                         break;
                     case 'chat':
                         stepResult = step.reply;

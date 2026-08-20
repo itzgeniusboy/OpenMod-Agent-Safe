@@ -39,6 +39,16 @@ export function fallbackRouter(prompt) {
             { action: 'summarize_folder', dir: './extracted' }
         ];
     }
+    if (lower.includes('lua script chahiye') || lower.includes('generate lua')) {
+        return [
+            { action: 'generate_lua_prompt', prompt: prompt, outFile: 'script.lua' }
+        ];
+    }
+    if (lower.includes('saari strings') || lower.includes('strings dhoondh')) {
+        return [
+            { action: 'search_strings', file: 'libUE4.so', keywords: ['health', 'ammo'] }
+        ];
+    }
     
     return [{ action: 'chat', reply: 'Could not determine workflow. Please be specific.' }];
 }

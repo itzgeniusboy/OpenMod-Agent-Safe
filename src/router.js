@@ -34,6 +34,11 @@ export function fallbackRouter(prompt) {
             { action: 'build_arm64', dir: '.', file: 'diagnostic_overlay.cpp' }
         ];
     }
+    if (lower.includes('unpacked folder') && lower.includes('summary')) {
+        return [
+            { action: 'summarize_folder', dir: './extracted' }
+        ];
+    }
     
     return [{ action: 'chat', reply: 'Could not determine workflow. Please be specific.' }];
 }

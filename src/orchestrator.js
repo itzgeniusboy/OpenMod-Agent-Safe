@@ -8,6 +8,7 @@ import { getExports, generateOffsetsHeader } from './tools/disasm.js';
 import { analyzeElf } from './tools/elfAnalyzer.js';
 import { inspectPak } from './tools/assetInspector.js';
 import { buildArm64 } from './tools/buildWrapper.js';
+import { summarizeFolder } from './tools/folderSummarizer.js';
 import { fallbackRouter } from './router.js';
 
 export async function orchestrateTask(prompt, logCallback = console.log) {
@@ -26,6 +27,7 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
         - {"action": "elf_analyze", "file": "lib.so"}
         - {"action": "pak_inspect", "file": "target.pak"}
         - {"action": "build_arm64", "dir": "src_dir", "file": "main.cpp"}
+        - {"action": "summarize_folder", "dir": "folder_path"}
         - {"action": "chat", "reply": "message"}
 
         User Prompt: "${prompt}"
@@ -79,6 +81,9 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
                         break;
                     case 'build_arm64':
                         stepResult = await buildArm64(step.dir, step.file, logCallback);
+                        break;
+                    case 'summarize_folder':
+                        stepResult = await summarizeFolder(step.dir, logCallback);
                         break;
                     case 'chat':
                         stepResult = step.reply;

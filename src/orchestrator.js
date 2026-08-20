@@ -28,6 +28,8 @@ import { inspectRawPAK } from './tools/pakNameDecoder.js';
 import { scheduleTask } from './tools/scheduler.js';
 import { startMenu } from './tools/tuiMenu.js';
 import { completeSource } from './tools/sourceCompleter.js';
+import { analyzeELFDetailed } from './tools/elfDetailedAnalyzer.js';
+import { analyzeLogcat } from './tools/logcatAnalyzer.js';
 import { fallbackRouter } from './router.js';
 
 export async function orchestrateTask(prompt, logCallback = console.log) {
@@ -69,6 +71,8 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
         - {"action": "tui_menu"}
         - {"action": "chat", "reply": "message"}
         - {"action": "complete_source", "file": "path"}
+        - {"action": "analyze_elf_detailed", "file": "path"}
+        - {"action": "analyze_logcat"}
 
         User Prompt: "${prompt}"
         Output ONLY a valid JSON array of objects.
@@ -187,6 +191,12 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
                         break;
                     case 'complete_source':
                         stepResult = await completeSource(step.file, "generic", logCallback);
+                        break;
+                    case 'analyze_elf_detailed':
+                        stepResult = analyzeELFDetailed(step.file);
+                        break;
+                    case 'analyze_logcat':
+                        stepResult = await analyzeLogcat();
                         break;
                     case 'chat':
                         stepResult = step.reply;

@@ -115,6 +115,14 @@ export function fallbackRouter(prompt) {
             { action: 'apk_deploy', apk: 'app.apk', keystore: 'debug.keystore' }
         ];
     }
+    if (lower.includes('analyze logcat')) {
+        return [{ action: 'analyze_logcat' }];
+    }
+    if (lower.includes('analyze elf detailed')) {
+        const parts = prompt.split(' ');
+        const file = parts.length > 3 ? parts[3] : 'libUE4.so';
+        return [{ action: 'analyze_elf_detailed', file: file }];
+    }
     if (lower.includes('source complete kar')) {
         const parts = prompt.split(' ');
         const file = parts.length > 3 ? parts[3] : 'main.cpp';

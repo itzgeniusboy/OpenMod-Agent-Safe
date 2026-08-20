@@ -13,6 +13,10 @@
 struct Vector3 { float x, y, z; };
 struct Vector2 { float x, y; };
 
+struct Matrix4x4 {
+    float m[4][4];
+};
+
 struct MockEntity {
     int id;
     float health;
@@ -20,14 +24,20 @@ struct MockEntity {
     int team;
 };
 
-// Simple World to Screen mock function
-bool WorldToScreen(const Vector3& world, Vector2& screen, int screenWidth, int screenHeight) {
-    // Mock projection logic
-    screen.x = (world.x / 1000.0f) * (screenWidth / 2) + (screenWidth / 2);
-    screen.y = (world.y / 1000.0f) * (screenHeight / 2) + (screenHeight / 2);
-    
-    // Check if behind camera
-    if (world.z < 0) return false;
+// Real World to Screen Math implementation
+bool WorldToScreen(const Vector3& pos, Vector2& screen, const Matrix4x4& matrix, int screenWidth, int screenHeight) {
+    float screenW = (matrix.m[0][3] * pos.x) + (matrix.m[1][3] * pos.y) + (matrix.m[2][3] * pos.z) + matrix.m[3][3];
+
+    if (screenW < 0.001f) {
+        return false;
+    }
+
+    float screenX = (matrix.m[0][0] * pos.x) + (matrix.m[1][0] * pos.y) + (matrix.m[2][0] * pos.z) + matrix.m[3][0];
+    float screenY = (matrix.m[0][1] * pos.x) + (matrix.m[1][1] * pos.y) + (matrix.m[2][1] * pos.z) + matrix.m[3][1];
+
+    screen.x = (screenWidth / 2.0f) + (screenX / screenW) * (screenWidth / 2.0f);
+    screen.y = (screenHeight / 2.0f) - (screenY / screenW) * (screenHeight / 2.0f);
+
     return true;
 }
 
@@ -45,6 +55,14 @@ int main(int argc, char** argv) {
         { 3, 10.0f, { 100.0f, -500.0f, 200.0f }, 2 }
     };
 
+    // Mock identity-like view matrix
+    Matrix4x4 mockMatrix = {
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+
     int screenWidth = 1920;
     int screenHeight = 1080;
 
@@ -52,7 +70,7 @@ int main(int argc, char** argv) {
 
     for (const auto& entity : mockEntities) {
         Vector2 screenPos;
-        if (WorldToScreen(entity.position, screenPos, screenWidth, screenHeight)) {
+        if (WorldToScreen(entity.position, screenPos, mockMatrix, screenWidth, screenHeight)) {
             DrawBox(screenPos, entity.health);
         }
     }

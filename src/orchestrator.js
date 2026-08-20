@@ -12,6 +12,10 @@ import { summarizeFolder } from './tools/folderSummarizer.js';
 import { generateAndTestLua } from './tools/luaPromptGen.js';
 import { searchStringsInBinary } from './tools/stringSearch.js';
 import { compareBinaries } from './tools/binaryDiff.js';
+import { generateSDK } from './tools/ue4SdkGen.js';
+import { dumpStrings } from './tools/datDumper.js';
+import { watchLogs } from './tools/logcatWatcher.js';
+import { loadTemplate } from './tools/templateManager.js';
 import { fallbackRouter } from './router.js';
 
 export async function orchestrateTask(prompt, logCallback = console.log) {
@@ -34,6 +38,10 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
         - {"action": "generate_lua_prompt", "prompt": "user request", "outFile": "script.lua"}
         - {"action": "search_strings", "file": "lib.so", "keywords": ["word1", "word2"]}
         - {"action": "binary_diff", "file1": "path1.so", "file2": "path2.so"}
+        - {"action": "sdk_gen", "file": "lib.so", "outDir": "./SDK"}
+        - {"action": "dat_dump", "file": "lib.so", "outFile": "classes.json"}
+        - {"action": "watch_logs", "package": "com.game", "duration": 10000}
+        - {"action": "load_template", "name": "template.cpp"}
         - {"action": "chat", "reply": "message"}
 
         User Prompt: "${prompt}"
@@ -99,6 +107,18 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
                         break;
                     case 'binary_diff':
                         stepResult = await compareBinaries(step.file1, step.file2, logCallback);
+                        break;
+                    case 'sdk_gen':
+                        stepResult = await generateSDK(step.file, step.outDir, logCallback);
+                        break;
+                    case 'dat_dump':
+                        stepResult = await dumpStrings(step.file, step.outFile, logCallback);
+                        break;
+                    case 'watch_logs':
+                        stepResult = await watchLogs(step.package, step.duration, logCallback);
+                        break;
+                    case 'load_template':
+                        stepResult = await loadTemplate(step.name, logCallback);
                         break;
                     case 'chat':
                         stepResult = step.reply;

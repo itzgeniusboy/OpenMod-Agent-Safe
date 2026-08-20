@@ -54,6 +54,26 @@ export function fallbackRouter(prompt) {
             { action: 'binary_diff', file1: 'old.so', file2: 'new.so' }
         ];
     }
+    if (lower.includes('sdk generate') || lower.includes('generate sdk')) {
+        return [
+            { action: 'sdk_gen', file: 'libUE4.so', outDir: './SDK' }
+        ];
+    }
+    if (lower.includes('strings dump') || lower.includes('dump strings')) {
+        return [
+            { action: 'dat_dump', file: 'libUE4.so', outFile: 'ue4_classes.json' }
+        ];
+    }
+    if (lower.includes('logs capture') || lower.includes('watch logs')) {
+        return [
+            { action: 'watch_logs', package: 'com.pubg.imobile', duration: 10000 }
+        ];
+    }
+    if (lower.includes('template load') || lower.includes('load template')) {
+        return [
+            { action: 'load_template', name: 'diagnostic_overlay.cpp' }
+        ];
+    }
     
     return [{ action: 'chat', reply: 'Could not determine workflow. Please be specific.' }];
 }

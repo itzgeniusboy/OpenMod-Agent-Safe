@@ -6,7 +6,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "bgmi": "node index.js --bgmi-mode"
+    "bgmi": "node index.js --bgmi-mode",
+    "sdkg": "node src/tools/ue4SdkGen.js",
+    "strings": "node src/tools/datDumper.js"
   },
   "dependencies": {
     "chalk": "^4.1.2",

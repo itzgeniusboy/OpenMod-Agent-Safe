@@ -16,6 +16,8 @@ import { generateSDK } from './tools/ue4SdkGen.js';
 import { dumpStrings } from './tools/datDumper.js';
 import { watchLogs } from './tools/logcatWatcher.js';
 import { loadTemplate } from './tools/templateManager.js';
+import { generatePatchPlan } from './tools/patchGenerator.js';
+import { generateHookDocumentation } from './tools/fridaScriptGen.js';
 import { fallbackRouter } from './router.js';
 
 export async function orchestrateTask(prompt, logCallback = console.log) {
@@ -42,6 +44,8 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
         - {"action": "dat_dump", "file": "lib.so", "outFile": "classes.json"}
         - {"action": "watch_logs", "package": "com.game", "duration": 10000}
         - {"action": "load_template", "name": "template.cpp"}
+        - {"action": "patch_plan", "instructions": [{"offset": "0x1A", "patch": "00", "description": "desc"}], "outFile": "plan.txt"}
+        - {"action": "hook_doc", "targetClass": "class", "targetMethod": "method", "outFile": "doc.md"}
         - {"action": "chat", "reply": "message"}
 
         User Prompt: "${prompt}"
@@ -119,6 +123,12 @@ export async function orchestrateTask(prompt, logCallback = console.log) {
                         break;
                     case 'load_template':
                         stepResult = await loadTemplate(step.name, logCallback);
+                        break;
+                    case 'patch_plan':
+                        stepResult = await generatePatchPlan(step.instructions, step.outFile, logCallback);
+                        break;
+                    case 'hook_doc':
+                        stepResult = await generateHookDocumentation(step.targetClass, step.targetMethod, step.outFile, logCallback);
                         break;
                     case 'chat':
                         stepResult = step.reply;

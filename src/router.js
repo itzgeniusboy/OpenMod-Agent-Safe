@@ -74,6 +74,16 @@ export function fallbackRouter(prompt) {
             { action: 'load_template', name: 'diagnostic_overlay.cpp' }
         ];
     }
+    if (lower.includes('patch plan') || lower.includes('generate patch')) {
+        return [
+            { action: 'patch_plan', instructions: [{ offset: '0x1000', patch: '00', description: 'bypass' }], outFile: 'patch_plan.txt' }
+        ];
+    }
+    if (lower.includes('hook doc') || lower.includes('frida script bana')) {
+        return [
+            { action: 'hook_doc', targetClass: 'UWorld', targetMethod: 'GetWorld', outFile: 'hook_guide.md' }
+        ];
+    }
     
     return [{ action: 'chat', reply: 'Could not determine workflow. Please be specific.' }];
 }
